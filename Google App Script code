@@ -1,0 +1,29 @@
+function sendEmails() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var data = sheet.getDataRange().getValues();
+  var subject = "<SUBJECT>";
+  var emailBodyTemplate = `Dear {{First Name}},  
+
+      <EMAIL BODY>
+
+Best,  
+<NAME>`;
+
+  var fileId = "1OBAXmnjHM5808oArtvKpZxkS1mHKYKE_"; 
+  var file = DriveApp.getFileById(fileId);
+  
+  for (var i = 1; i < data.length; i++) {
+    var email = data[i][0];
+    var firstName = data[i][1];
+    var companyName = data[i][2];
+
+    var emailBody = emailBodyTemplate.replace("{{First Name}}", firstName).replace("{{Company Name}}", companyName);
+    
+    MailApp.sendEmail({
+      to: email,
+      subject: subject.replace("{{First Name}}", firstName),
+      body: emailBody,
+      attachments: [file.getAs(MimeType.PDF)] // Ensures the attachment is sent as a PDF
+    });
+  }
+}
